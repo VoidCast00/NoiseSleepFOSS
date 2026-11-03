@@ -140,8 +140,8 @@ class NoiseService : Service() {
     }
 
     private fun newTimerEnd(): Long? {
-        val minutes = Playback.settings.value.timerMinutes
-        return if (minutes <= 0) null else SystemClock.elapsedRealtime() + minutes * 60_000L
+        val s = Playback.settings.value
+        return if (!s.timerEnabled) null else SystemClock.elapsedRealtime() + s.timerMinutes * 60_000L
     }
 
     /** Backup for [NoiseEngine.onTimerSilent], which normally stops playback first. */
@@ -150,11 +150,10 @@ class NoiseService : Service() {
         if (end != null) main.postDelayed(timerDone, end - SystemClock.elapsedRealtime() + 1_000)
     }
 
+    /** Read live by the audio thread, so changing the fade length applies straight away. */
     private fun timerGain(): Float {
         val end = Playback.state.value.timerEndsAt ?: return 1f
-        val left = (end - SystemClock.elapsedRealtime()).toFloat()
-        val f = (left / TIMER_FADE_MS).coerceIn(0f, 1f)
-        return f * f
+        return fadeLevel(end - SystemClock.elapsedRealtime(), Playback.settings.value.fadeMinutes)
     }
 
     private fun requestFocus(): Boolean {
@@ -244,7 +243,6 @@ class NoiseService : Service() {
     companion object {
         private const val CHANNEL_ID = "playback"
         private const val NOTIFICATION_ID = 1
-        private const val TIMER_FADE_MS = 60_000f
 
         private const val ACTION_PLAY = "io.github.voidcast00.noisesleep.PLAY"
         private const val ACTION_PAUSE = "io.github.voidcast00.noisesleep.PAUSE"
@@ -253,6 +251,17 @@ class NoiseService : Service() {
 
         private fun intent(context: Context, action: String) =
             Intent(context, NoiseService::class.java).setAction(action)
+
+        /**
+         * Loudness (0..1) with [leftMs] to go and a [fadeMinutes] fade. Sounds like a straight
+         * slope: amplitude is squared because the ear hears loudness roughly as amplitude^0.6.
+         * "No fade" still takes 3 seconds so it does not cut off with a jolt.
+         */
+        fun fadeLevel(leftMs: Long, fadeMinutes: Int): Float {
+            val fadeMs = maxOf(fadeMinutes * 60_000L, 3_000L)
+            val f = (leftMs.toFloat() / fadeMs).coerceIn(0f, 1f)
+            return f * f
+        }
 
         fun play(context: Context) {
             ContextCompat.startForegroundService(context, intent(context, ACTION_PLAY))

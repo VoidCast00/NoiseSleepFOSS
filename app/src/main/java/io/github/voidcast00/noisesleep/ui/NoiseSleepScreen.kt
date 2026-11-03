@@ -1,6 +1,5 @@
 package io.github.voidcast00.noisesleep.ui
 
-import android.os.SystemClock
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -28,19 +27,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,9 +45,6 @@ import androidx.compose.ui.unit.dp
 import io.github.voidcast00.noisesleep.NoiseSettings
 import io.github.voidcast00.noisesleep.PlaybackState
 import io.github.voidcast00.noisesleep.R
-import kotlinx.coroutines.delay
-
-private val TIMER_OPTIONS = listOf(0, 15, 30, 60, 90)
 
 @Composable
 fun NoiseSleepScreen(
@@ -63,7 +52,7 @@ fun NoiseSleepScreen(
     settings: NoiseSettings,
     onPlayPause: () -> Unit,
     onSettingsChange: ((NoiseSettings) -> NoiseSettings) -> Unit,
-    onTimerChange: (Int) -> Unit,
+    onTimerChange: ((NoiseSettings) -> NoiseSettings) -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     // Surface also sets the default text colour, otherwise unstyled text comes out black
@@ -83,11 +72,11 @@ fun NoiseSleepScreen(
                 color = colors.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(Modifier.height(48.dp))
+            Spacer(Modifier.height(24.dp))
             PlayButton(playing = state.playing, onClick = onPlayPause)
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(8.dp))
             Text(stringResource(colorName(settings.color)), style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(28.dp))
 
             SettingSlider(
                 label = R.string.colour, startLabel = R.string.white, endLabel = R.string.brown,
@@ -109,30 +98,11 @@ fun NoiseSleepScreen(
             )
 
             Spacer(Modifier.height(24.dp))
-            Text(
-                stringResource(R.string.sleep_timer),
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(8.dp))
-            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                TIMER_OPTIONS.forEachIndexed { index, minutes ->
-                    SegmentedButton(
-                        selected = settings.timerMinutes == minutes,
-                        onClick = { onTimerChange(minutes) },
-                        shape = SegmentedButtonDefaults.itemShape(index, TIMER_OPTIONS.size),
-                        icon = {},
-                    ) {
-                        Text(if (minutes == 0) stringResource(R.string.timer_off) else minutes.toString())
-                    }
-                }
-            }
-            Spacer(Modifier.height(12.dp))
-            Text(
-                timerStatus(state, settings),
-                style = MaterialTheme.typography.bodyMedium,
-                color = colors.onSurfaceVariant,
-                modifier = Modifier.fillMaxWidth(),
+            SleepTimerCard(
+                state = state,
+                settings = settings,
+                onTimerChange = onTimerChange,
+                onSettingsChange = onSettingsChange,
             )
         }
       }
@@ -142,12 +112,17 @@ fun NoiseSleepScreen(
 @Composable
 private fun PlayButton(playing: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    // A slow "breathing" halo while playing
-    val breath by rememberInfiniteTransition(label = "breath").animateFloat(
-        initialValue = 1f, targetValue = 1.12f,
-        animationSpec = infiniteRepeatable(tween(4000, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "breath",
-    )
+    // A slow "breathing" halo while playing. Only animated while playing so a paused screen
+    // costs nothing (and stays idle for the system).
+    val breath = if (playing) {
+        rememberInfiniteTransition(label = "breath").animateFloat(
+            initialValue = 1f, targetValue = 1.12f,
+            animationSpec = infiniteRepeatable(tween(4000, easing = FastOutSlowInEasing), RepeatMode.Reverse),
+            label = "breath",
+        ).value
+    } else {
+        1f
+    }
     val haloAlpha by animateFloatAsState(if (playing) 0.18f else 0f, tween(800), label = "halo")
     Box(Modifier.size(180.dp), contentAlignment = Alignment.Center) {
         Box(
@@ -222,30 +197,4 @@ private fun colorName(color: Float): Int = when {
     color < 0.62f -> R.string.noise_pink
     color < 0.85f -> R.string.noise_pink_brown
     else -> R.string.noise_brown
-}
-
-@Composable
-private fun timerStatus(state: PlaybackState, settings: NoiseSettings): String {
-    val end = state.timerEndsAt
-    if (end != null) {
-        var now by remember { mutableLongStateOf(SystemClock.elapsedRealtime()) }
-        LaunchedEffect(end) {
-            while (true) {
-                now = SystemClock.elapsedRealtime()
-                delay(1000L - (end - now).mod(1000L))
-            }
-        }
-        val left = ((end - now).coerceAtLeast(0L) + 999L) / 1000L
-        val h = left / 3600
-        val m = left % 3600 / 60
-        val s = left % 60
-        val clock = if (h > 0) "%d:%02d:%02d".format(h, m, s) else "%d:%02d".format(m, s)
-        return stringResource(R.string.timer_counting, clock)
-    }
-    return stringResource(
-        when {
-            settings.timerMinutes == 0 -> R.string.timer_none
-            else -> R.string.timer_waiting
-        },
-    )
 }

@@ -12,8 +12,11 @@ data class NoiseSettings(
     /** 0 = bright, 1 = deep (low-pass filter). */
     val warmth: Float = 0.25f,
     val volume: Float = 0.6f,
-    /** 0 = off. */
+    val timerEnabled: Boolean = true,
+    /** How long to play before the sound is gone (includes the fade). */
     val timerMinutes: Int = 30,
+    /** The last part of [timerMinutes] over which the volume slides to silence. 0 = no fade. */
+    val fadeMinutes: Int = 5,
 )
 
 data class PlaybackState(
@@ -54,11 +57,15 @@ private class SettingsStore(context: Context) {
 
     fun load(): NoiseSettings {
         val d = NoiseSettings()
+        // Version 0.1.0 stored "timer off" as 0 minutes
+        val minutes = prefs.getInt("timer_minutes", d.timerMinutes)
         return NoiseSettings(
             color = prefs.getFloat("color", d.color),
             warmth = prefs.getFloat("warmth", d.warmth),
             volume = prefs.getFloat("volume", d.volume),
-            timerMinutes = prefs.getInt("timer_minutes", d.timerMinutes),
+            timerEnabled = prefs.getBoolean("timer_enabled", minutes > 0),
+            timerMinutes = if (minutes > 0) minutes else d.timerMinutes,
+            fadeMinutes = prefs.getInt("fade_minutes", d.fadeMinutes),
         )
     }
 
@@ -67,7 +74,9 @@ private class SettingsStore(context: Context) {
             .putFloat("color", s.color)
             .putFloat("warmth", s.warmth)
             .putFloat("volume", s.volume)
+            .putBoolean("timer_enabled", s.timerEnabled)
             .putInt("timer_minutes", s.timerMinutes)
+            .putInt("fade_minutes", s.fadeMinutes)
             .apply()
     }
 }

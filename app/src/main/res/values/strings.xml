@@ -22,11 +22,21 @@
     <string name="quiet">Quiet</string>
     <string name="loud">Loud</string>
 
-    <string name="sleep_timer">Sleep timer (minutes)</string>
-    <string name="timer_off">Off</string>
-    <string name="timer_counting">Stops in %1$s, fading out over the last minute</string>
-    <string name="timer_waiting">Starts counting when you press play</string>
+    <string name="sleep_timer">Sleep timer</string>
+    <string name="timer_left">%1$s left</string>
     <string name="timer_none">Plays until you stop it</string>
+    <string name="stop_after">Stop after</string>
+    <string name="fade_out_over">Fade out over</string>
+    <string name="no_fade">No fade</string>
+    <string name="graph_start">Play</string>
+    <string name="graph_now">Now</string>
+    <string name="graph_fade_from">Fade from %1$s</string>
+    <string name="graph_silent">Silent %1$s</string>
+    <string name="summary_plan">After you press play: full volume for %1$s, then it slowly fades to silence over %2$s.</string>
+    <string name="summary_plan_no_fade">After you press play: full volume for %1$s, then it stops.</string>
+    <string name="summary_running">Full volume until %1$s, then fades to silence by %2$s.</string>
+    <string name="summary_fading_now">Fading out now, silent by %1$s.</string>
+    <string name="summary_stops_at">Full volume, stops at %1$s.</string>
 
     <string name="notif_channel">Playback</string>
     <string name="notif_playing">Playing</string>

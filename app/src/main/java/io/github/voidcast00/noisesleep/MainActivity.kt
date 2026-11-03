@@ -38,8 +38,8 @@ class MainActivity : ComponentActivity() {
                     settings = settings,
                     onPlayPause = { if (state.playing) NoiseService.pause(this) else startPlaying() },
                     onSettingsChange = Playback::updateSettings,
-                    onTimerChange = { minutes ->
-                        Playback.updateSettings { it.copy(timerMinutes = minutes) }
+                    onTimerChange = { transform ->
+                        Playback.updateSettings(transform)
                         NoiseService.timerChanged(this)
                     },
                 )
