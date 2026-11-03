@@ -1,5 +1,11 @@
 # NoiseSleep
 
+> [!WARNING]
+> **Small personal app, AI-generated, not reviewed.** This was built largely by an AI coding
+> assistant for one person's own use. The code has not been reviewed or audited, and it has had
+> little testing on real devices. It is shared as-is, with no support and no guarantees.
+> Use it at your own risk, and keep the volume at a level that is safe for your hearing.
+
 White, pink and brown noise you can tune for sleep, with a sleep timer. One screen, no clutter.
 
 - **Colour**: blend smoothly from white → pink → brown
@@ -21,5 +27,3 @@ No internet permission, no accounts, no ads, no tracking.
 ```
 
 Android 10+ · Kotlin + Jetpack Compose · GPL-3.0
-
-> Built largely with Claude Code under one person's direction.
