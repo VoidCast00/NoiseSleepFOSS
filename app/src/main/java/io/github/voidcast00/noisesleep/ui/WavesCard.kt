@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import io.github.voidcast00.noisesleep.NoiseGenerator
 import io.github.voidcast00.noisesleep.NoiseSettings
 import io.github.voidcast00.noisesleep.R
-import kotlin.math.sqrt
+import kotlin.math.pow
 
 private val WAVE_SECONDS = (4..20).toList()
 private val STRENGTH_STEPS = listOf(1, 2, 3, 4, 5)
@@ -82,7 +82,10 @@ fun WavesCard(
                     )
                     StepSlider(
                         label = stringResource(R.string.wave_strength),
-                        valueText = strengthName,
+                        valueText = stringResource(
+                            R.string.strength_value, strengthName,
+                            NoiseGenerator.waveDepthDb(settings.waveStrength).let { if (it % 1f == 0f) it.toInt().toString() else it.toString() },
+                        ),
                         options = STRENGTH_STEPS,
                         value = step,
                         onValueChange = { n -> onSettingsChange { it.copy(waveStrength = (n - 1) / 4f) } },
@@ -119,8 +122,8 @@ private fun WavePreview(strength: Float) {
                 }
                 t -= len
             }
-            val amplitude = 1f - strength * NoiseGenerator.MAX_WAVE_DEPTH * (1f - NoiseGenerator.waveLevel(phase))
-            val level = sqrt(amplitude) // roughly how loud it sounds
+            val dip = NoiseGenerator.waveDepthDb(strength) * (1f - NoiseGenerator.waveLevel(phase))
+            val level = 10f.pow(-dip / 20f * 0.6f) // loudness grows roughly as amplitude^0.6
             val x = w * i / samples
             val y = top + (h - top) * (1f - level)
             if (i == 0) curve.moveTo(x, y) else curve.lineTo(x, y)

@@ -28,6 +28,7 @@
     <string name="wave_every">Wave every</string>
     <string name="seconds">%1$d s</string>
     <string name="wave_strength">Strength</string>
+    <string name="strength_value">%1$s, %2$s dB</string>
     <string name="strength_1">Very gentle</string>
     <string name="strength_2">Gentle</string>
     <string name="strength_3">Medium</string>

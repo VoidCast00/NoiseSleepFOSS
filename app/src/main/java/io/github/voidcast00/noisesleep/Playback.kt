@@ -7,21 +7,21 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class NoiseSettings(
-    /** 0 = white, 0.5 = pink, 1 = brown, blended in between. */
-    val color: Float = 0.75f,
-    /** 0 = bright, 1 = deep (low-pass filter). */
-    val warmth: Float = 0.25f,
+    /** 0 = white, 0.5 = pink, 1 = brown, blended in between. Pink-like is a reasonable start. */
+    val color: Float = 0.5f,
+    /** 0 = bright, 1 = deep (low-pass filter). Default ≈ 4 kHz. */
+    val warmth: Float = 0.35f,
     val volume: Float = 0.6f,
     val wavesEnabled: Boolean = false,
     /** Average length of one wave. */
-    val waveSeconds: Int = 10,
-    /** 0 = gentle, 1 = strong. */
-    val waveStrength: Float = 0.5f,
+    val waveSeconds: Int = 12,
+    /** 0..1 in five steps, see [NoiseGenerator.WAVE_STEPS_DB]. Default = 3 dB. */
+    val waveStrength: Float = 0.25f,
     val timerEnabled: Boolean = true,
     /** How long to play before the sound is gone (includes the fade). */
-    val timerMinutes: Int = 30,
+    val timerMinutes: Int = 60,
     /** The last part of [timerMinutes] over which the volume slides to silence. 0 = no fade. */
-    val fadeMinutes: Int = 5,
+    val fadeMinutes: Int = 10,
 )
 
 data class PlaybackState(

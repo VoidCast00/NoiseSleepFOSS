@@ -10,7 +10,7 @@ import kotlin.math.min
 
 /**
  * Plays [NoiseGenerator] output through an [AudioTrack] on its own thread.
- * Starting fades in over 2 s and stopping fades out over 0.4 s, so there are no clicks.
+ * Starting fades in over 5 s (quiet first) and stopping fades out over 0.4 s, so there are no clicks.
  */
 class NoiseEngine(
     private val settings: () -> NoiseSettings,
@@ -54,7 +54,7 @@ class NoiseEngine(
                 // Squared so the slider feels even: half way sounds like half as loud
                 generator.render(
                     buf, s.color, s.warmth, s.volume * s.volume * t,
-                    waveStrength = if (s.wavesEnabled) s.waveStrength else 0f,
+                    waveDepthDb = if (s.wavesEnabled) NoiseGenerator.waveDepthDb(s.waveStrength) else 0f,
                     waveSeconds = s.waveSeconds.toFloat(),
                 )
 
@@ -63,8 +63,8 @@ class NoiseEngine(
                 while (i + 1 < buf.size) {
                     env = if (env < target) min(target, env + FADE_IN_STEP) else max(target, env - FADE_OUT_STEP)
                     val e = env * env
-                    buf[i] = (buf[i] * e).coerceIn(-1f, 1f)
-                    buf[i + 1] = (buf[i + 1] * e).coerceIn(-1f, 1f)
+                    buf[i] = NoiseGenerator.softClip(buf[i] * e)
+                    buf[i + 1] = NoiseGenerator.softClip(buf[i + 1] * e)
                     i += 2
                 }
                 track.write(buf, 0, buf.size, AudioTrack.WRITE_BLOCKING)
@@ -113,7 +113,7 @@ class NoiseEngine(
 
     companion object {
         private const val FRAMES = 1024 // ~23 ms per buffer
-        private const val FADE_IN_STEP = 1f / (NoiseGenerator.SAMPLE_RATE * 2f)
+        private const val FADE_IN_STEP = 1f / (NoiseGenerator.SAMPLE_RATE * 5f)
         private const val FADE_OUT_STEP = 1f / (NoiseGenerator.SAMPLE_RATE * 0.4f)
 
         val AUDIO_ATTRIBUTES: AudioAttributes = AudioAttributes.Builder()
