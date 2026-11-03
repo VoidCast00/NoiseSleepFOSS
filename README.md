@@ -37,7 +37,7 @@ See [docs/RESEARCH.md](docs/RESEARCH.md) for what the studies say.
 
 ```sh
 ./gradlew assembleDebug        # app/build/outputs/apk/debug/
-./gradlew testDebugUnitTest    # loudness model, no clipping, waves, timer fade
+./gradlew testDebugUnitTest    # loudness model, no clipping, waves
 ```
 
 Android 10+ · Kotlin + Jetpack Compose · GPL-3.0
