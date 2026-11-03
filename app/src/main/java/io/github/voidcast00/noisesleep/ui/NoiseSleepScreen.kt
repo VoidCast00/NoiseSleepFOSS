@@ -66,12 +66,9 @@ fun NoiseSleepScreen(
     onTimerChange: (Int) -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(colors.background),
-        contentAlignment = Alignment.TopCenter,
-    ) {
+    // Surface also sets the default text colour, otherwise unstyled text comes out black
+    Surface(Modifier.fillMaxSize(), color = colors.background) {
+      Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Column(
             Modifier
                 .safeDrawingPadding()
@@ -138,6 +135,7 @@ fun NoiseSleepScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+      }
     }
 }
 
