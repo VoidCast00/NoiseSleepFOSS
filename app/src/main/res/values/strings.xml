@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NoiseSleep</string>
+
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+
+    <string name="noise_white">White noise</string>
+    <string name="noise_white_pink">White-pink noise</string>
+    <string name="noise_pink">Pink noise</string>
+    <string name="noise_pink_brown">Pink-brown noise</string>
+    <string name="noise_brown">Brown noise</string>
+
+    <string name="colour">Colour</string>
+    <string name="white">White</string>
+    <string name="brown">Brown</string>
+    <string name="warmth">Warmth</string>
+    <string name="bright">Bright</string>
+    <string name="deep">Deep</string>
+    <string name="volume">Volume</string>
+    <string name="quiet">Quiet</string>
+    <string name="loud">Loud</string>
+
+    <string name="sleep_timer">Sleep timer (minutes)</string>
+    <string name="timer_off">Off</string>
+    <string name="timer_counting">Stops in %1$s, fading out over the last minute</string>
+    <string name="timer_waiting">Starts counting when you press play</string>
+    <string name="timer_none">Plays until you stop it</string>
+
+    <string name="notif_channel">Playback</string>
+    <string name="notif_playing">Playing</string>
+    <string name="notif_paused">Paused</string>
+    <string name="notif_stops_at">Playing, stops at %1$s</string>
+</resources>

@@ -1,0 +1,12 @@
+NoiseSleep plays white, pink or brown noise, or any blend in between, to help you fall asleep.
+
+<ul>
+<li><b>Colour</b>: blend smoothly from white to pink to brown</li>
+<li><b>Warmth</b>: soften the hiss, from bright to deep</li>
+<li><b>Sleep timer</b>: 15, 30, 60 or 90 minutes, fading out gently over the last minute</li>
+</ul>
+
+The noise is generated live, so there are no loops or seams. It keeps playing with the screen off,
+pauses for phone calls and stops when headphones are unplugged.
+
+No internet permission, no accounts, no ads, no tracking.
