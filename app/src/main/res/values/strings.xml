@@ -24,6 +24,7 @@
 
     <string name="ocean_waves">Ocean waves</string>
     <string name="waves_off_hint">The sound slowly swells and fades like surf</string>
+    <string name="waves_short">Every %1$d s, %2$s</string>
     <string name="wave_every">Wave every</string>
     <string name="seconds">%1$d s</string>
     <string name="wave_strength">Strength</string>
@@ -34,7 +35,9 @@
     <string name="strength_5">Very strong</string>
 
     <string name="sleep_timer">Sleep timer</string>
-    <string name="timer_left">%1$s left</string>
+    <string name="timer_short">%1$s, fade out over %2$s</string>
+    <string name="timer_short_no_fade">%1$s, no fade</string>
+    <string name="timer_running_short">%1$s left, silent at %2$s</string>
     <string name="timer_none">Plays until you stop it</string>
     <string name="stop_after">Stop after</string>
     <string name="fade_out_over">Fade out over</string>
@@ -48,6 +51,9 @@
     <string name="summary_running">Full volume until %1$s, then fades to silence by %2$s.</string>
     <string name="summary_fading_now">Fading out now, silent by %1$s.</string>
     <string name="summary_stops_at">Full volume, stops at %1$s.</string>
+
+    <string name="tile_off">Off</string>
+    <string name="tile_until">Until %1$s</string>
 
     <string name="notif_channel">Playback</string>
     <string name="notif_playing">Playing</string>

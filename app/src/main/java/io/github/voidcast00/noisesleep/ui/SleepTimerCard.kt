@@ -26,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -75,38 +77,22 @@ fun SleepTimerCard(
     fun clock(offsetMs: Long): String =
         DateFormat.getTimeFormat(context).format(Date(System.currentTimeMillis() + offsetMs))
 
-    Surface(
-        shape = RoundedCornerShape(24.dp),
-        color = colors.surfaceVariant,
-        contentColor = colors.onSurface,
-        modifier = Modifier.fillMaxWidth(),
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    ExpandableCard(
+        title = stringResource(R.string.sleep_timer),
+        summary = when {
+            !settings.timerEnabled -> stringResource(R.string.timer_none)
+            running -> stringResource(R.string.timer_running_short, duration(totalMs), clock(totalMs))
+            settings.fadeMinutes == 0 -> stringResource(R.string.timer_short_no_fade, minutes(totalMs))
+            else -> stringResource(R.string.timer_short, minutes(totalMs), minutes(fadeMs))
+        },
+        highlightSummary = running,
+        checked = settings.timerEnabled,
+        onCheckedChange = { on -> onTimerChange { it.copy(timerEnabled = on) } },
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
     ) {
-        Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.sleep_timer), style = MaterialTheme.typography.titleMedium)
-                    if (running) {
-                        Text(
-                            stringResource(R.string.timer_left, duration(totalMs)),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = colors.primary,
-                        )
-                    }
-                }
-                Switch(
-                    checked = settings.timerEnabled,
-                    onCheckedChange = { on -> onTimerChange { it.copy(timerEnabled = on) } },
-                    colors = SwitchDefaults.colors(checkedThumbColor = colors.onPrimary, checkedTrackColor = colors.primary),
-                )
-            }
-
-            AnimatedVisibility(
-                visible = settings.timerEnabled,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut(),
-            ) {
                 Column {
-                    Spacer(Modifier.height(12.dp))
                     MarkerLabel(
                         text = if (settings.fadeMinutes > 0 && fadeStartMs > 0) {
                             stringResource(
@@ -155,23 +141,19 @@ fun SleepTimerCard(
                         value = settings.fadeMinutes,
                         onValueChange = { m -> onSettingsChange { it.copy(fadeMinutes = minOf(m, it.timerMinutes)) } },
                     )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = when {
+                            running && settings.fadeMinutes == 0 -> stringResource(R.string.summary_stops_at, clock(totalMs))
+                            running && fadeStartMs == 0L -> stringResource(R.string.summary_fading_now, clock(totalMs))
+                            running -> stringResource(R.string.summary_running, clock(fadeStartMs), clock(totalMs))
+                            settings.fadeMinutes == 0 -> stringResource(R.string.summary_plan_no_fade, minutes(totalMs))
+                            else -> stringResource(R.string.summary_plan, minutes(fadeStartMs), minutes(fadeMs))
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = colors.onSurfaceVariant,
+                    )
                 }
-            }
-
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = when {
-                    !settings.timerEnabled -> stringResource(R.string.timer_none)
-                    running && settings.fadeMinutes == 0 -> stringResource(R.string.summary_stops_at, clock(totalMs))
-                    running && fadeStartMs == 0L -> stringResource(R.string.summary_fading_now, clock(totalMs))
-                    running -> stringResource(R.string.summary_running, clock(fadeStartMs), clock(totalMs))
-                    settings.fadeMinutes == 0 -> stringResource(R.string.summary_plan_no_fade, minutes(totalMs))
-                    else -> stringResource(R.string.summary_plan, minutes(fadeStartMs), minutes(fadeMs))
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                color = colors.onSurfaceVariant,
-            )
-        }
     }
 }
 

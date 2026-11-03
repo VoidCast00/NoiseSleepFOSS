@@ -19,6 +19,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -41,39 +45,32 @@ fun WavesCard(
     settings: NoiseSettings,
     onSettingsChange: ((NoiseSettings) -> NoiseSettings) -> Unit,
 ) {
-    val colors = MaterialTheme.colorScheme
-    Surface(
-        shape = RoundedCornerShape(24.dp),
-        color = colors.surfaceVariant,
-        contentColor = colors.onSurface,
-        modifier = Modifier.fillMaxWidth(),
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    // Stored as 0..1, shown as five steps from gentle to strong
+    val step = (settings.waveStrength * 4f + 0.5f).toInt() + 1
+    val strengthName = stringResource(
+        when (step) {
+            1 -> R.string.strength_1
+            2 -> R.string.strength_2
+            3 -> R.string.strength_3
+            4 -> R.string.strength_4
+            else -> R.string.strength_5
+        },
+    )
+    ExpandableCard(
+        title = stringResource(R.string.ocean_waves),
+        summary = if (settings.wavesEnabled) {
+            stringResource(R.string.waves_short, settings.waveSeconds, strengthName)
+        } else {
+            stringResource(R.string.waves_off_hint)
+        },
+        highlightSummary = false,
+        checked = settings.wavesEnabled,
+        onCheckedChange = { on -> onSettingsChange { it.copy(wavesEnabled = on) } },
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
     ) {
-        Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.ocean_waves), style = MaterialTheme.typography.titleMedium)
-                    if (!settings.wavesEnabled) {
-                        Text(
-                            stringResource(R.string.waves_off_hint),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = colors.onSurfaceVariant,
-                        )
-                    }
-                }
-                Switch(
-                    checked = settings.wavesEnabled,
-                    onCheckedChange = { on -> onSettingsChange { it.copy(wavesEnabled = on) } },
-                    colors = SwitchDefaults.colors(checkedThumbColor = colors.onPrimary, checkedTrackColor = colors.primary),
-                )
-            }
-
-            AnimatedVisibility(
-                visible = settings.wavesEnabled,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut(),
-            ) {
                 Column {
-                    Spacer(Modifier.height(16.dp))
                     WavePreview(strength = settings.waveStrength)
                     Spacer(Modifier.height(16.dp))
                     StepSlider(
@@ -83,26 +80,14 @@ fun WavesCard(
                         value = settings.waveSeconds,
                         onValueChange = { sec -> onSettingsChange { it.copy(waveSeconds = sec) } },
                     )
-                    // Stored as 0..1, shown as five steps from gentle to strong
-                    val step = (settings.waveStrength * 4f + 0.5f).toInt() + 1
                     StepSlider(
                         label = stringResource(R.string.wave_strength),
-                        valueText = stringResource(
-                            when (step) {
-                                1 -> R.string.strength_1
-                                2 -> R.string.strength_2
-                                3 -> R.string.strength_3
-                                4 -> R.string.strength_4
-                                else -> R.string.strength_5
-                            },
-                        ),
+                        valueText = strengthName,
                         options = STRENGTH_STEPS,
                         value = step,
                         onValueChange = { n -> onSettingsChange { it.copy(waveStrength = (n - 1) / 4f) } },
                     )
                 }
-            }
-        }
     }
 }
 

@@ -1,6 +1,7 @@
 package io.github.voidcast00.noisesleep
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
@@ -28,6 +29,8 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
         )
         Playback.init(this)
+        // Opened from the Quick Settings tile when Android would not let it start playback itself
+        if (savedInstanceState == null && intent.getBooleanExtra(EXTRA_PLAY, false)) startPlaying()
 
         setContent {
             NoiseSleepTheme {
@@ -47,6 +50,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.getBooleanExtra(EXTRA_PLAY, false) && !Playback.state.value.playing) startPlaying()
+    }
+
     private fun startPlaying() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
@@ -56,5 +64,9 @@ class MainActivity : ComponentActivity() {
         } else {
             NoiseService.play(this)
         }
+    }
+
+    companion object {
+        const val EXTRA_PLAY = "io.github.voidcast00.noisesleep.EXTRA_PLAY"
     }
 }

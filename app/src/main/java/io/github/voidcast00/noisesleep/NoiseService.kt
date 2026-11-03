@@ -91,6 +91,7 @@ class NoiseService : Service() {
         abandonFocus()
         main.removeCallbacksAndMessages(null)
         Playback.setState(PlaybackState())
+        NoiseTileService.requestUpdate(this)
         super.onDestroy()
     }
 
@@ -107,6 +108,7 @@ class NoiseService : Service() {
         engine.start()
         registerNoisy()
         goForeground()
+        NoiseTileService.requestUpdate(this)
     }
 
     /** [transient]: a phone call or similar. Keep focus and the timer, resume afterwards. */
@@ -192,6 +194,7 @@ class NoiseService : Service() {
 
     private fun notifyUpdate() {
         getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, buildNotification())
+        NoiseTileService.requestUpdate(this)
     }
 
     private fun buildNotification(): Notification {

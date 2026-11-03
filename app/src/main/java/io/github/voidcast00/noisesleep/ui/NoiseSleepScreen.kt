@@ -72,11 +72,11 @@ fun NoiseSleepScreen(
                 color = colors.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(8.dp))
             PlayButton(playing = state.playing, onClick = onPlayPause)
             Spacer(Modifier.height(8.dp))
             Text(stringResource(colorName(settings.color)), style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(16.dp))
 
             SettingSlider(
                 label = R.string.colour, startLabel = R.string.white, endLabel = R.string.brown,
@@ -97,7 +97,7 @@ fun NoiseSleepScreen(
                 onValueChange = { v -> onSettingsChange { it.copy(volume = v) } },
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
             WavesCard(settings = settings, onSettingsChange = onSettingsChange)
             Spacer(Modifier.height(12.dp))
             SleepTimerCard(
@@ -126,10 +126,10 @@ private fun PlayButton(playing: Boolean, onClick: () -> Unit) {
         1f
     }
     val haloAlpha by animateFloatAsState(if (playing) 0.18f else 0f, tween(800), label = "halo")
-    Box(Modifier.size(180.dp), contentAlignment = Alignment.Center) {
+    Box(Modifier.size(156.dp), contentAlignment = Alignment.Center) {
         Box(
             Modifier
-                .size(140.dp)
+                .size(128.dp)
                 .scale(breath)
                 .clip(CircleShape)
                 .background(colors.primary.copy(alpha = haloAlpha)),
@@ -138,14 +138,14 @@ private fun PlayButton(playing: Boolean, onClick: () -> Unit) {
             onClick = onClick,
             shape = CircleShape,
             color = colors.primary,
-            modifier = Modifier.size(128.dp),
+            modifier = Modifier.size(116.dp),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     painterResource(if (playing) R.drawable.ic_pause else R.drawable.ic_play),
                     contentDescription = stringResource(if (playing) R.string.pause else R.string.play),
                     tint = colors.onPrimary,
-                    modifier = Modifier.size(56.dp),
+                    modifier = Modifier.size(52.dp),
                 )
             }
         }
@@ -162,7 +162,7 @@ private fun SettingSlider(
     onValueChange: (Float) -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
-    Column(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
         Text(stringResource(label), style = MaterialTheme.typography.labelLarge)
         Box(contentAlignment = Alignment.Center) {
             Box(
