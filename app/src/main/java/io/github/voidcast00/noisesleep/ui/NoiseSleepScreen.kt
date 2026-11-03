@@ -98,6 +98,8 @@ fun NoiseSleepScreen(
             )
 
             Spacer(Modifier.height(24.dp))
+            WavesCard(settings = settings, onSettingsChange = onSettingsChange)
+            Spacer(Modifier.height(12.dp))
             SleepTimerCard(
                 state = state,
                 settings = settings,

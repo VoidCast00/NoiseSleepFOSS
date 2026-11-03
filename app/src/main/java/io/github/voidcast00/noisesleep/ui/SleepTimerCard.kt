@@ -238,7 +238,7 @@ private fun MarkerLabel(text: String, fraction: Float) {
 }
 
 @Composable
-private fun StepSlider(
+internal fun StepSlider(
     label: String,
     valueText: String,
     options: List<Int>,

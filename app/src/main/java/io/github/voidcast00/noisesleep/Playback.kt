@@ -12,6 +12,11 @@ data class NoiseSettings(
     /** 0 = bright, 1 = deep (low-pass filter). */
     val warmth: Float = 0.25f,
     val volume: Float = 0.6f,
+    val wavesEnabled: Boolean = false,
+    /** Average length of one wave. */
+    val waveSeconds: Int = 10,
+    /** 0 = gentle, 1 = strong. */
+    val waveStrength: Float = 0.5f,
     val timerEnabled: Boolean = true,
     /** How long to play before the sound is gone (includes the fade). */
     val timerMinutes: Int = 30,
@@ -63,6 +68,9 @@ private class SettingsStore(context: Context) {
             color = prefs.getFloat("color", d.color),
             warmth = prefs.getFloat("warmth", d.warmth),
             volume = prefs.getFloat("volume", d.volume),
+            wavesEnabled = prefs.getBoolean("waves_enabled", d.wavesEnabled),
+            waveSeconds = prefs.getInt("wave_seconds", d.waveSeconds),
+            waveStrength = prefs.getFloat("wave_strength", d.waveStrength),
             timerEnabled = prefs.getBoolean("timer_enabled", minutes > 0),
             timerMinutes = if (minutes > 0) minutes else d.timerMinutes,
             fadeMinutes = prefs.getInt("fade_minutes", d.fadeMinutes),
@@ -74,6 +82,9 @@ private class SettingsStore(context: Context) {
             .putFloat("color", s.color)
             .putFloat("warmth", s.warmth)
             .putFloat("volume", s.volume)
+            .putBoolean("waves_enabled", s.wavesEnabled)
+            .putInt("wave_seconds", s.waveSeconds)
+            .putFloat("wave_strength", s.waveStrength)
             .putBoolean("timer_enabled", s.timerEnabled)
             .putInt("timer_minutes", s.timerMinutes)
             .putInt("fade_minutes", s.fadeMinutes)

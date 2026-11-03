@@ -52,7 +52,11 @@ class NoiseEngine(
                 val s = settings()
                 val t = timerGain()
                 // Squared so the slider feels even: half way sounds like half as loud
-                generator.render(buf, s.color, s.warmth, s.volume * s.volume * t)
+                generator.render(
+                    buf, s.color, s.warmth, s.volume * s.volume * t,
+                    waveStrength = if (s.wavesEnabled) s.waveStrength else 0f,
+                    waveSeconds = s.waveSeconds.toFloat(),
+                )
 
                 val target = if (fadingOut) 0f else 1f
                 var i = 0
